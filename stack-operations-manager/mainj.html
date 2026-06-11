@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stack Operations Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-inter bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-10 fade-in">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-3">Stack Operations Manager</h1>
+            <!--<p class="text-gray-600 max-w-2xl mx-auto">A Java stack implementation demonstrating push, pop, peek, and display operations with overflow/underflow handling. Built with classes, constructors, method overloading, and exception handling.</p>-->
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Stack Visualization Panel -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl shadow-lg p-6 mb-6 slide-up">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-semibold text-gray-800">Stack Visualization</h2>
+                        <div class="flex space-x-2">
+                            <span class="px-3 py-1 bg-primary-100 text-primary-800 text-sm font-medium rounded-full" id="stackType">Integer Stack</span>
+                            <span class="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full" id="stackStatus">Ready</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Stack Visualization -->
+                    <div class="flex flex-col items-center mb-8">
+                        <div class="w-full max-w-md">
+                            <div class="text-center mb-4">
+                                <p class="text-gray-700 font-medium">Stack Top</p>
+                                <div class="h-1 w-16 bg-primary-500 mx-auto rounded"></div>
+                            </div>
+                            
+                            <div class="border-2 border-gray-300 rounded-lg h-80 overflow-hidden relative" id="stackContainer">
+                                <!-- Stack items will be dynamically added here -->
+                                <div class="absolute inset-0 flex flex-col-reverse items-center p-4" id="stackItems">
+                                    <div class="w-full text-center py-8 text-gray-400" id="emptyStackMessage">
+                                        <i class="fas fa-layer-group text-4xl mb-3"></i>
+                                        <p class="text-lg">Stack is empty</p>
+                                        <p class="text-sm">Push some elements to get started</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-4">
+                                <div class="h-1 w-16 bg-gray-400 mx-auto rounded"></div>
+                                <p class="text-gray-700 font-medium">Stack Base</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Stack Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <p class="text-sm text-gray-500 mb-1">Stack Size</p>
+                            <p class="text-2xl font-bold text-gray-800" id="stackSize">10</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <p class="text-sm text-gray-500 mb-1">Elements Count</p>
+                            <p class="text-2xl font-bold text-gray-800" id="elementsCount">0</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <p class="text-sm text-gray-500 mb-1">Top Element</p>
+                            <p class="text-2xl font-bold text-gray-800" id="topElement">None</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Operation Log -->
+                <div class="bg-white rounded-xl shadow-lg p-6 slide-up">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Operation Log</h2>
+                    <div class="bg-gray-50 rounded-lg p-4 h-60 overflow-y-auto" id="operationLog">
+                        <div class="text-gray-500 text-sm text-center py-8">Operations will appear here...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Control Panel -->
+            <div>
+                <div class="bg-white rounded-xl shadow-lg p-6 sticky top-8 slide-up">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6">Stack Controls</h2>
+                    
+                    <!-- Stack Configuration -->
+                    <div class="mb-8">
+                        <h3 class="font-medium text-gray-700 mb-3">Stack Configuration</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Stack Size</label>
+                                <div class="flex">
+                                    <input type="number" id="stackSizeInput" min="1" max="20" value="10" class="flex-grow border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                    <button id="setSizeBtn" class="bg-primary-600 text-white px-4 py-2 rounded-r-lg hover:bg-primary-700 transition">Set</button>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Stack Type</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button id="intStackBtn" class="stack-type-btn bg-primary-600 text-white py-2 rounded-lg transition">Integer</button>
+                                    <button id="stringStackBtn" class="stack-type-btn bg-gray-200 text-gray-800 py-2 rounded-lg hover:bg-gray-300 transition">String</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Stack Operations -->
+                    <div class="mb-8">
+                        <h3 class="font-medium text-gray-700 mb-3">Stack Operations</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Push Element</label>
+                                <div class="flex">
+                                    <input type="text" id="pushInput" placeholder="Enter value" class="flex-grow border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                    <button id="pushBtn" class="bg-green-600 text-white px-4 py-2 rounded-r-lg hover:bg-green-700 transition">Push</button>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-3">
+                                <button id="popBtn" class="bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition flex items-center justify-center">
+                                    <i class="fas fa-arrow-up mr-2"></i> Pop
+                                </button>
+                                <button id="peekBtn" class="bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition flex items-center justify-center">
+                                    <i class="fas fa-eye mr-2"></i> Peek
+                                </button>
+                            </div>
+                            
+                            <button id="displayBtn" class="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition flex items-center justify-center">
+                                <i class="fas fa-list mr-2"></i> Display Stack
+                            </button>
+                            
+                            <button id="clearBtn" class="w-full bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition flex items-center justify-center">
+                                <i class="fas fa-trash-alt mr-2"></i> Clear Stack
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Multiple Stacks -->
+                    <div class="mb-6">
+                        <h3 class="font-medium text-gray-700 mb-3">Multiple Stacks</h3>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button id="stack1Btn" class="bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700 transition">Stack 1</button>
+                            <button id="stack2Btn" class="bg-gray-200 text-gray-800 py-2 rounded-lg hover:bg-gray-300 transition">Stack 2</button>
+                            <button id="stack3Btn" class="bg-gray-200 text-gray-800 py-2 rounded-lg hover:bg-gray-300 transition">Stack 3</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Info Panel -->
+                   <!--- <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h3 class="font-medium text-blue-800 mb-2">About This Implementation</h3>
+                        <p class="text-sm text-blue-700">
+                            This application demonstrates key Java OOP concepts: classes, objects, arrays, constructors, 
+                            <code>this</code> keyword, method overloading, access control, and exception handling for overflow/underflow.
+                        </p>
+                    </div>--->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Java Code Display -->
+       <!-- <div class="bg-white rounded-xl shadow-lg p-6 mt-8 slide-up">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">Java Stack Implementation</h2>
+                <div class="flex space-x-2">
+                    <button id="showIntegerCode" class="px-3 py-1 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700">Integer Stack</button>
+                    <button id="showStringCode" class="px-3 py-1 bg-gray-200 text-gray-800 text-sm rounded-lg hover:bg-gray-300">String Stack</button>
+                    <button id="showGenericCode" class="px-3 py-1 bg-gray-200 text-gray-800 text-sm rounded-lg hover:bg-gray-300">Generic Stack</button>
+                </div>
+            </div>
+            <div class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto">
+                <pre><code class="text-sm" id="javaCode">
+// Java code will be displayed here
+                </code></pre>
+            </div>
+        </div>--->
+        
+        <!-- Footer -->
+        <!--<footer class="mt-12 text-center text-gray-500 text-sm">
+            <p>Stack Operations Manager | Java OOP Project | Evaluation Criteria: Push/Pop (4), Peek (2), Display (3), Overflow/Underflow (3), OOP Concepts (3), Presentation (2), On-Time Submission (3)</p>
+            <p class="mt-2">Total Marks: <span class="font-bold">20</span></p>
+        </footer>--->
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="js/stack.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
